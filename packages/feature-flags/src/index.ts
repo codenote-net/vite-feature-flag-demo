@@ -1,3 +1,3 @@
 export { FeatureFlagProvider } from "./FeatureFlagProvider";
+export type { FeatureFlagContextValue, FeatureFlags } from "./types";
 export { useFeatureFlag, useFeatureFlags } from "./useFeatureFlag";
-export type { FeatureFlags, FeatureFlagContextValue } from "./types";

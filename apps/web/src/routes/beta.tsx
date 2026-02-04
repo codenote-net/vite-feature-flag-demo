@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useFeatureFlag } from "@demo/feature-flags";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/beta")({
   component: BetaPage,
@@ -16,9 +16,7 @@ function BetaPage() {
           <h2>Beta Access Required</h2>
           <div className="access-denied-content">
             <span className="access-denied-icon">🧪</span>
-            <p>
-              This feature is currently in beta testing.
-            </p>
+            <p>This feature is currently in beta testing.</p>
             <p className="access-denied-hint">
               Enable the <code>betaFeature</code> flag to preview this page.
             </p>

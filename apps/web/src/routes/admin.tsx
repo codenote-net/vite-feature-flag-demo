@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useFeatureFlag } from "@demo/feature-flags";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -16,9 +16,7 @@ function AdminPage() {
           <h2>Access Denied</h2>
           <div className="access-denied-content">
             <span className="access-denied-icon">🔒</span>
-            <p>
-              You don't have permission to access this page.
-            </p>
+            <p>You don't have permission to access this page.</p>
             <p className="access-denied-hint">
               Enable the <code>adminAccess</code> flag to unlock this page.
             </p>
@@ -62,9 +60,15 @@ function AdminPage() {
 
           <h3>Admin Actions</h3>
           <div className="admin-actions">
-            <button type="button" className="btn">Manage Users</button>
-            <button type="button" className="btn">View Logs</button>
-            <button type="button" className="btn">System Settings</button>
+            <button type="button" className="btn">
+              Manage Users
+            </button>
+            <button type="button" className="btn">
+              View Logs
+            </button>
+            <button type="button" className="btn">
+              System Settings
+            </button>
           </div>
         </div>
       </section>
