@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/public'
+import { Route as EnvFlagsRouteImport } from './routes/env-flags'
 import { Route as BetaRouteImport } from './routes/beta'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const PublicRoute = PublicRouteImport.update({
   id: '/public',
   path: '/public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnvFlagsRoute = EnvFlagsRouteImport.update({
+  id: '/env-flags',
+  path: '/env-flags',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BetaRoute = BetaRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/beta': typeof BetaRoute
+  '/env-flags': typeof EnvFlagsRoute
   '/public': typeof PublicRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/beta': typeof BetaRoute
+  '/env-flags': typeof EnvFlagsRoute
   '/public': typeof PublicRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/beta': typeof BetaRoute
+  '/env-flags': typeof EnvFlagsRoute
   '/public': typeof PublicRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/beta' | '/public'
+  fullPaths: '/' | '/admin' | '/beta' | '/env-flags' | '/public'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/beta' | '/public'
-  id: '__root__' | '/' | '/admin' | '/beta' | '/public'
+  to: '/' | '/admin' | '/beta' | '/env-flags' | '/public'
+  id: '__root__' | '/' | '/admin' | '/beta' | '/env-flags' | '/public'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BetaRoute: typeof BetaRoute
+  EnvFlagsRoute: typeof EnvFlagsRoute
   PublicRoute: typeof PublicRoute
 }
 
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/public'
       fullPath: '/public'
       preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/env-flags': {
+      id: '/env-flags'
+      path: '/env-flags'
+      fullPath: '/env-flags'
+      preLoaderRoute: typeof EnvFlagsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/beta': {
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BetaRoute: BetaRoute,
+  EnvFlagsRoute: EnvFlagsRoute,
   PublicRoute: PublicRoute,
 }
 export const routeTree = rootRouteImport

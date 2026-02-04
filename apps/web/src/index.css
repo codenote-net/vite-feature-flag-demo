@@ -430,6 +430,190 @@ body {
 	font-size: 0.85rem;
 }
 
+/* Page Layout */
+.page {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+.page h2 {
+	margin-bottom: 0.5rem;
+	color: #333;
+}
+
+.page .description {
+	color: #666;
+	margin-bottom: 2rem;
+}
+
+/* Card */
+.card {
+	background: white;
+	border-radius: 12px;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+	margin-bottom: 1rem;
+	color: #333;
+	font-size: 1.1rem;
+}
+
+.card h4 {
+	margin-bottom: 0.5rem;
+	color: #555;
+}
+
+.card-info {
+	background: #e7f3ff;
+	border-left: 4px solid #667eea;
+}
+
+/* List */
+.list {
+	margin: 0;
+	padding-left: 1.5rem;
+}
+
+.list li {
+	margin-bottom: 0.5rem;
+}
+
+.list code {
+	background: #e9ecef;
+	padding: 0.15rem 0.4rem;
+	border-radius: 4px;
+	font-size: 0.85rem;
+}
+
+/* Flag Table */
+.flag-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.flag-table th,
+.flag-table td {
+	padding: 0.75rem;
+	text-align: left;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.flag-table th {
+	background: #f8f9fa;
+	font-weight: 600;
+}
+
+.flag-table code {
+	background: #e9ecef;
+	padding: 0.15rem 0.4rem;
+	border-radius: 4px;
+	font-size: 0.85rem;
+}
+
+/* Badge variants */
+.badge-on {
+	background-color: #d4edda;
+	color: #155724;
+}
+
+.badge-off {
+	background-color: #f8d7da;
+	color: #721c24;
+}
+
+/* Example Grid */
+.example-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1rem;
+}
+
+.example {
+	padding: 1rem;
+	background: #f8f9fa;
+	border-radius: 8px;
+}
+
+.feature-enabled {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #155724;
+	background: #d4edda;
+	padding: 0.5rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+}
+
+.feature-disabled {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #721c24;
+	background: #f8d7da;
+	padding: 0.5rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+}
+
+.feature-warning {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #856404;
+	background: #fff3cd;
+	padding: 0.5rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+}
+
+.icon {
+	font-weight: bold;
+}
+
+/* Debug Output */
+.debug-output {
+	background: #2d3436;
+	color: #dfe6e9;
+	padding: 1rem;
+	border-radius: 8px;
+	overflow-x: auto;
+	font-size: 0.85rem;
+	margin-top: 1rem;
+}
+
+/* Code Block */
+.code-block {
+	background: #2d3436;
+	color: #dfe6e9;
+	padding: 1rem;
+	border-radius: 8px;
+	overflow-x: auto;
+	font-size: 0.85rem;
+	white-space: pre;
+}
+
+/* Text utilities */
+.text-muted {
+	color: #6c757d;
+	font-style: italic;
+}
+
+/* Details */
+details summary {
+	cursor: pointer;
+	color: #667eea;
+	font-weight: 500;
+}
+
+details summary:hover {
+	text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
 	.header {
