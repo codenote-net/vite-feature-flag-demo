@@ -1,6 +1,6 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { FeatureFlagProvider, useFeatureFlag } from "@demo/feature-flags";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 const defaultFlags = {
   newDashboard: true,

@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useFeatureFlag, useFeatureFlags } from "@demo/feature-flags";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -26,7 +26,9 @@ function HomePage() {
                   className="flag-checkbox"
                 />
                 <span className="flag-name">{key}</span>
-                <span className={`badge ${value ? "badge-enabled" : "badge-disabled"}`}>
+                <span
+                  className={`badge ${value ? "badge-enabled" : "badge-disabled"}`}
+                >
                   {value ? "ON" : "OFF"}
                 </span>
               </label>
@@ -65,13 +67,20 @@ function HomePage() {
       <section className="feature-card">
         <h2>Route Access Control</h2>
         <p>
-          Try enabling <strong>adminAccess</strong> and <strong>betaFeature</strong> flags above,
-          then navigate to the Admin and Beta pages using the navigation bar.
+          Try enabling <strong>adminAccess</strong> and{" "}
+          <strong>betaFeature</strong> flags above, then navigate to the Admin
+          and Beta pages using the navigation bar.
         </p>
         <ul className="info-list">
-          <li><strong>/admin</strong> - Requires <code>adminAccess</code> flag</li>
-          <li><strong>/beta</strong> - Requires <code>betaFeature</code> flag</li>
-          <li><strong>/public</strong> - Always accessible (no flag required)</li>
+          <li>
+            <strong>/admin</strong> - Requires <code>adminAccess</code> flag
+          </li>
+          <li>
+            <strong>/beta</strong> - Requires <code>betaFeature</code> flag
+          </li>
+          <li>
+            <strong>/public</strong> - Always accessible (no flag required)
+          </li>
         </ul>
       </section>
     </div>
