@@ -1,0 +1,20 @@
+{
+  "name": "vite-feature-flag-demo",
+  "private": true,
+  "packageManager": "pnpm@10.9.0",
+  "engines": {
+    "node": "24.13.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "turbo format"
+  },
+  "devDependencies": {
+    "turbo": "2.8.3"
+  }
+}
