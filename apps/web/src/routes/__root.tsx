@@ -27,6 +27,9 @@ function Navigation() {
       <Link to="/public" className="nav-link">
         Public
       </Link>
+      <Link to="/env-flags" className="nav-link">
+        Env Flags
+      </Link>
     </nav>
   );
 }

@@ -10,6 +10,8 @@ A comprehensive demonstration project for implementing custom feature flags in a
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
+  - [Pattern 1: React Context (Runtime)](#pattern-1-react-context-runtime)
+  - [Pattern 2: Environment Variables (Build-time)](#pattern-2-environment-variables-build-time)
 - [Implementation Details](#implementation-details)
 - [Scripts](#scripts)
 - [Architecture Decisions](#architecture-decisions)
@@ -77,10 +79,13 @@ vite-feature-flag-demo/
 │       ├── src/
 │       │   ├── routes/               # TanStack Router file-based routes
 │       │   │   ├── __root.tsx        # Root layout with FeatureFlagProvider
-│       │   │   └── index.tsx         # Home page with feature flag demo UI
+│       │   │   ├── index.tsx         # Home page with feature flag demo UI
+│       │   │   └── env-flags.tsx     # Environment variable pattern demo
 │       │   ├── main.tsx              # Application entry point
 │       │   ├── index.css             # Global styles (plain CSS)
 │       │   └── routeTree.gen.ts      # Auto-generated route tree
+│       ├── .env                      # Environment variables (git-ignored)
+│       ├── .env.example              # Example environment variables
 │       ├── index.html                # HTML template
 │       ├── vite.config.ts            # Vite configuration
 │       ├── tsconfig.json             # TypeScript configuration
@@ -93,7 +98,8 @@ vite-feature-flag-demo/
 │           ├── types.ts              # TypeScript type definitions
 │           ├── FeatureFlagContext.ts # React context definition
 │           ├── FeatureFlagProvider.tsx # Provider component
-│           └── useFeatureFlag.ts     # Custom React hooks
+│           ├── useFeatureFlag.ts     # Custom React hooks
+│           └── envFlags.ts           # Environment variable utilities
 │
 ├── package.json                      # Root workspace configuration
 ├── pnpm-workspace.yaml               # pnpm workspace definition
@@ -129,6 +135,9 @@ corepack enable
 # Install dependencies
 pnpm install
 
+# Set up environment variables (optional, for env flag demo)
+cp apps/web/.env.example apps/web/.env
+
 # Start development server
 pnpm dev
 ```
@@ -140,12 +149,27 @@ The application will be available at `http://localhost:5173` (or next available 
 After starting the dev server, you should see:
 
 1. A "Feature Flag Demo" page with a control panel
-2. Three toggleable feature flags: `newDashboard`, `darkMode`, `betaFeature`
+2. Four toggleable feature flags: `newDashboard`, `darkMode`, `betaFeature`, `adminAccess`
 3. Real-time UI updates when toggling flags
+4. Navigation links: Home, Admin, Beta, Public, **Env Flags**
+5. The "Env Flags" page showing environment variable-based flags
 
 ## Usage
 
-### Feature Flag Package API
+This project demonstrates **two distinct patterns** for implementing feature flags:
+
+| Pattern | Control | Best For |
+|---------|---------|----------|
+| **React Context (Runtime)** | Changeable at runtime | User-specific flags, A/B testing, dynamic toggles |
+| **Environment Variables (Build-time)** | Fixed at build time | Environment-specific flags, CI/CD integration |
+
+---
+
+### Pattern 1: React Context (Runtime)
+
+This pattern uses React Context API to manage feature flags that can be changed at runtime.
+
+#### Feature Flag Package API
 
 The `@demo/feature-flags` package exports the following:
 
@@ -290,6 +314,171 @@ function SubmitButton() {
 }
 ```
 
+---
+
+### Pattern 2: Environment Variables (Build-time)
+
+This pattern uses Vite's environment variables to define feature flags that are embedded at build time. These flags cannot be changed at runtime.
+
+#### Setup
+
+1. **Create `.env` file** in `apps/web/`:
+
+```bash
+# Feature flags must be prefixed with VITE_FF_
+VITE_FF_EXPERIMENTAL_CHECKOUT=true
+VITE_FF_ANALYTICS_DASHBOARD=true
+VITE_FF_AB_TEST_VARIANT=false
+VITE_FF_MAINTENANCE_MODE=false
+```
+
+2. **Copy `.env.example` as a template** (committed to git):
+
+```bash
+cp apps/web/.env.example apps/web/.env
+```
+
+> **Note**: `.env` is git-ignored to prevent accidental commits of environment-specific values.
+
+#### API
+
+##### `getEnvFlags(): Record<string, boolean>`
+
+Get all feature flags from environment variables:
+
+```typescript
+import { getEnvFlags } from "@demo/feature-flags";
+
+const flags = getEnvFlags();
+// { experimentalCheckout: true, analyticsDashboard: true, abTestVariant: false, maintenanceMode: false }
+```
+
+##### `isEnvFlagEnabled(flagName: string): boolean`
+
+Check if a specific flag is enabled:
+
+```typescript
+import { isEnvFlagEnabled } from "@demo/feature-flags";
+
+if (isEnvFlagEnabled("experimentalCheckout")) {
+  return <NewCheckout />;
+}
+return <ClassicCheckout />;
+```
+
+##### `getEnvFlagDebugInfo(): object`
+
+Get debug information including raw environment values:
+
+```typescript
+import { getEnvFlagDebugInfo } from "@demo/feature-flags";
+
+const debug = getEnvFlagDebugInfo();
+// {
+//   prefix: "VITE_FF_",
+//   rawValues: { "VITE_FF_EXPERIMENTAL_CHECKOUT": "true", ... },
+//   parsedFlags: { experimentalCheckout: true, ... }
+// }
+```
+
+#### Naming Convention
+
+| Environment Variable | Parsed Flag Name |
+|---------------------|------------------|
+| `VITE_FF_NEW_DASHBOARD` | `newDashboard` |
+| `VITE_FF_DARK_MODE` | `darkMode` |
+| `VITE_FF_AB_TEST_VARIANT` | `abTestVariant` |
+
+- Prefix: `VITE_FF_` (required for Vite to expose to client)
+- Format: `SCREAMING_SNAKE_CASE` → converted to `camelCase`
+- Values: `"true"` or `"false"` (case-insensitive)
+
+#### Usage Example
+
+```tsx
+import { isEnvFlagEnabled } from "@demo/feature-flags";
+
+function App() {
+  // Check maintenance mode
+  if (isEnvFlagEnabled("maintenanceMode")) {
+    return <MaintenancePage />;
+  }
+
+  return (
+    <div>
+      {/* Conditional feature based on env flag */}
+      {isEnvFlagEnabled("analyticsDashboard") && <AnalyticsDashboard />}
+
+      {/* A/B test variant */}
+      {isEnvFlagEnabled("abTestVariant") ? <VariantB /> : <VariantA />}
+    </div>
+  );
+}
+```
+
+#### When to Use Environment Variable Flags
+
+| Use Case | Recommended |
+|----------|-------------|
+| Different config per environment (dev/staging/prod) | Yes |
+| CI/CD pipeline feature toggles | Yes |
+| Simple on/off toggles without runtime changes | Yes |
+| User-specific or session-specific flags | No (use React Context) |
+| Flags that need to change without redeployment | No (use React Context) |
+| Sensitive configuration | No (values are bundled) |
+
+#### Per-Environment Configuration
+
+```bash
+# .env.development
+VITE_FF_DEBUG_MODE=true
+VITE_FF_MOCK_API=true
+
+# .env.production
+VITE_FF_DEBUG_MODE=false
+VITE_FF_MOCK_API=false
+
+# .env.staging
+VITE_FF_DEBUG_MODE=true
+VITE_FF_MOCK_API=false
+```
+
+---
+
+### Comparison: Runtime vs Build-time Flags
+
+| Aspect | React Context (Runtime) | Environment Variables (Build-time) |
+|--------|------------------------|-----------------------------------|
+| **When resolved** | Runtime (in browser) | Build time (during `vite build`) |
+| **Can change without rebuild** | Yes | No |
+| **User-specific targeting** | Yes | No |
+| **Environment-specific** | Possible but complex | Native support |
+| **Bundle size impact** | Minimal | None (dead code elimination) |
+| **DevTools visibility** | State visible in React DevTools | Values embedded in bundle |
+| **Typical use case** | A/B testing, gradual rollouts | Dev/prod differences, CI/CD |
+
+#### Combining Both Patterns
+
+You can use both patterns together for maximum flexibility:
+
+```tsx
+import { useFeatureFlag, isEnvFlagEnabled } from "@demo/feature-flags";
+
+function MyComponent() {
+  // Build-time flag: Is this feature available in this environment?
+  const isFeatureAvailable = isEnvFlagEnabled("newFeature");
+
+  // Runtime flag: Is this user enrolled in the feature?
+  const isUserEnrolled = useFeatureFlag("newFeatureRollout");
+
+  // Both must be true
+  if (isFeatureAvailable && isUserEnrolled) {
+    return <NewFeature />;
+  }
+  return <LegacyFeature />;
+}
+```
+
 ## Implementation Details
 
 ### How the Feature Flag Library Works
@@ -321,6 +510,64 @@ Two hooks for consuming flags:
 - `useFeatureFlags()`: Returns the full context (flags, setFlag, isEnabled)
 - `useFeatureFlag(key)`: Convenience hook for checking a single flag
 
+### Environment Variable Flag Implementation (`envFlags.ts`)
+
+The environment variable pattern is implemented with three main functions:
+
+#### 1. Parsing Logic
+
+```typescript
+// Convert "true"/"false" strings to boolean
+function parseBoolean(value: string | boolean | undefined): boolean {
+  if (typeof value === "boolean") return value;
+  if (value === undefined || value === "") return false;
+  return value.toLowerCase() === "true" || value === "1";
+}
+
+// Convert SCREAMING_SNAKE_CASE to camelCase
+function toCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+```
+
+#### 2. Flag Extraction
+
+```typescript
+export function getEnvFlags(options: EnvFlagOptions = {}): Record<string, boolean> {
+  const { prefix = "VITE_FF_", env = import.meta.env } = options;
+
+  const flags: Record<string, boolean> = {};
+
+  for (const [key, value] of Object.entries(env)) {
+    if (key.startsWith(prefix)) {
+      const flagName = toCamelCase(key.slice(prefix.length));
+      flags[flagName] = parseBoolean(value);
+    }
+  }
+
+  return flags;
+}
+```
+
+#### 3. How Vite Handles Environment Variables
+
+Vite replaces `import.meta.env.VITE_*` at build time:
+
+```javascript
+// Source code
+if (import.meta.env.VITE_FF_DEBUG === "true") { ... }
+
+// After build (production)
+if ("false" === "true") { ... }  // Dead code, removed by minifier
+```
+
+This means:
+- **No runtime overhead**: Values are inlined as strings
+- **Dead code elimination**: Disabled features are removed from bundle
+- **No secrets**: All `VITE_*` values are embedded in client bundle
+
 ### TanStack Router Integration
 
 The project uses TanStack Router with file-based routing:
@@ -328,6 +575,7 @@ The project uses TanStack Router with file-based routing:
 1. **Route files** in `src/routes/` are automatically discovered
 2. **`__root.tsx`** defines the root layout with `FeatureFlagProvider`
 3. **`routeTree.gen.ts`** is auto-generated by the Vite plugin
+4. **`env-flags.tsx`** demonstrates the environment variable pattern
 
 ## Scripts
 
@@ -535,6 +783,8 @@ Potential improvements for production use:
 - [ ] **Server-side evaluation** - Prevent flag exposure in client bundle
 - [ ] **Flag expiration** - Automatically clean up old flags
 - [ ] **TypeScript strict flag keys** - Compile-time validation of flag names
+- [x] **Environment variable flags** - Build-time feature flags via `VITE_FF_*`
+- [ ] **Hybrid flag system** - Combine runtime and build-time flags with priority rules
 
 ## Contributing
 
